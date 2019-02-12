@@ -81,7 +81,8 @@ echo $ajaxRequest->component(); ?>
                                 '{inputClass}' => 'col-lg-4'
                             ],
                         ])->widget(NumberControl::className(), [
-                            'maskedInputOptions' => Yii::$app->params['maskedInputOptions']
+                            'maskedInputOptions' => Yii::$app->params['maskedInputOptions'],
+                            'disabled' => !$model->isNewRecord
                         ]) ?>
                     
                         <?= $form->field($model, 'item_amount', [ 

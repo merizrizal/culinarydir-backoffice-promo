@@ -9,6 +9,7 @@ use backoffice\controllers\BaseController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
+use core\models\PromoItem;
 
 /**
  * PromoController implements the CRUD actions for Promo model.
@@ -71,25 +72,46 @@ class PromoController extends BaseController
 
             if (!empty($save)) {
                 
-                Yii::$app->formatter->timeZone = 'Asia/Jakarta';
+                $flag = false;
+                $transaction = Yii::$app->db->beginTransaction();
                 
-                if (!empty($post['Promo']['date_end'])) {
+                if (($flag = $model->save())) {
+                
+                    Yii::$app->formatter->timeZone = 'Asia/Jakarta';
                     
-                    $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
-                } else {
+                    if (!empty($post['Promo']['date_end'])) {
+                        
+                        $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
+                    } else {
+                        
+                        $isActive = !$post['Promo']['not_active'];
+                    }
                     
-                    $isActive = !$post['Promo']['not_active'];
+                    Yii::$app->formatter->timeZone = 'UTC';
+                    
+                    for ($i = 1; $i <= $post['Promo']['item_amount']; $i++) {
+                        
+                        $modelPromoItem = new PromoItem();
+                        $modelPromoItem->id = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6) . '_' . $i;
+                        $modelPromoItem->promo_id = $model->id;
+                        $modelPromoItem->amount = $post['Promo']['amount'];
+                        
+                        if (!($flag = $modelPromoItem->save())) {
+                            
+                            break;
+                        }
+                    }
                 }
-                
-                Yii::$app->formatter->timeZone = 'UTC';
 
-                if ($model->save()) {
+                if ($flag) {
 
                     Yii::$app->session->setFlash('status', 'success');
                     Yii::$app->session->setFlash('message1', Yii::t('app', 'Create Data Is Success'));
                     Yii::$app->session->setFlash('message2', Yii::t('app', 'Create data process is success. Data has been saved'));
-
+                    
                     $render = 'view';
+                    
+                    $transaction->commit();
                 } else {
 
                     $model->setIsNewRecord(true);
@@ -97,6 +119,8 @@ class PromoController extends BaseController
                     Yii::$app->session->setFlash('status', 'danger');
                     Yii::$app->session->setFlash('message1', Yii::t('app', 'Create Data Is Fail'));
                     Yii::$app->session->setFlash('message2', Yii::t('app', 'Create data process is fail. Data fail to save'));
+                    
+                    $transaction->rollBack();
                 }
             }
         }
@@ -120,7 +144,7 @@ class PromoController extends BaseController
         if ($model->load(($post = Yii::$app->request->post()))) {
 
             if (!empty($save)) {
-                
+                    
                 Yii::$app->formatter->timeZone = 'Asia/Jakarta';
                 
                 if (!empty($post['Promo']['date_end'])) {
@@ -132,7 +156,7 @@ class PromoController extends BaseController
                 }
                 
                 Yii::$app->formatter->timeZone = 'UTC';
-
+                
                 if ($model->save()) {
 
                     Yii::$app->session->setFlash('status', 'success');
