@@ -7,11 +7,11 @@ use sycomponent\ModalDialog;
 use sycomponent\NotificationDialog;
 
 /* @var $this yii\web\View */
-/* @var $model core\models\Promo */
+/* @var $model core\models\PromoItem */
 /* @var $isActive boolean */
 
 $ajaxRequest = new AjaxRequest([
-    'modelClass' => 'Promo',
+    'modelClass' => 'PromoItem',
 ]);
 
 $ajaxRequest->view();
@@ -32,13 +32,15 @@ if ($status !== null) {
     echo $notif->renderDialog();
 }
 
-$this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => $isActive ? Yii::t('app', 'Active Promo') : Yii::t('app', 'Inactive Promo'), 'url' => [$isActive ? 'index-active' : 'index-not-active']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Promo Item : ' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => $isActive ? Yii::t('app', 'Active Promo') : Yii::t('app', 'Inactive Promo'), 'url' => [$isActive ? 'promo/index-active' : 'promo/index-not-active']];
+$this->params['breadcrumbs'][] = ['label' => $model->promo->title, 'url' => ['promo/view', 'id' => $model->promo_id, 'isActive' => $isActive]];
+$this->params['breadcrumbs'][] = ['label' => 'Item', 'url' => ['index', 'id' => $model->promo->id, 'isActive' => $isActive]];
+$this->params['breadcrumbs'][] = 'View Item';
 
 echo $ajaxRequest->component(); ?>
 
-<div class="promo-view">
+<div class="promo-item-view">
 
     <div class="row">
         <div class="col-sm-12">
@@ -48,18 +50,8 @@ echo $ajaxRequest->component(); ?>
 
                     <?= Html::a('<i class="fa fa-pencil-alt"></i> Edit', ['update', 'id' => $model->id, 'isActive' => $isActive], ['class' => 'btn btn-primary']) ?>
 
-                    <?= Html::a('<i class="fa fa-trash-alt"></i> Delete', ['delete', 'id' => $model->id, 'isActive' => $isActive], [
-                        'id' => 'delete',
-                        'class' => 'btn btn-danger',
-                        'data-not-ajax' => 1,
-                        'model-id' => $model->id,
-                        'model-name' => $model->title,
-                    ]) ?>
-                    
-                    <?= Html::a('<i class="fas fa-percent"></i> Promo Item', ['promo-item/index', 'id' => $model['id'], 'isActive' => $isActive], ['class' => 'btn btn-default']) ?>
+                    <?= Html::a('<i class="fa fa-times"></i> Cancel', ['index', 'id' => $model->promo->id, 'isActive' => $isActive], ['class' => 'btn btn-default']) ?>
 
-                    <?= Html::a('<i class="fa fa-times"></i> Cancel', [$isActive ? 'index-active' : 'index-not-active'], ['class' => 'btn btn-default']) ?>
-                    
                     <div class="clearfix" style="margin-top: 15px"></div>
 
                     <?= DetailView::widget([
@@ -68,12 +60,8 @@ echo $ajaxRequest->component(); ?>
                             'class' => 'table'
                         ],
                         'attributes' => [
-                            'title',
-                            'type',
-                            'amount:currency',
-                            'item_amount',
-                            'date_start',
-                            'date_end',
+                            'id',
+                            'amount',
                             [
                                 'attribute' => 'not_active',
                                 'format' => 'raw',

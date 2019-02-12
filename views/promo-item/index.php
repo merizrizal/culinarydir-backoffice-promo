@@ -7,13 +7,13 @@ use sycomponent\ModalDialog;
 use sycomponent\NotificationDialog;
 
 /* @var $this yii\web\View */
-/* @var $searchModel core\models\search\PromoSearch */
+/* @var $searchModel core\models\search\PromoItemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $modelPromo core\models\Promo */
 /* @var $isActive boolean */
-/* @var $title string */
 
 $ajaxRequest = new AjaxRequest([
-    'modelClass' => 'Promo',
+    'modelClass' => 'PromoItem',
 ]);
 
 $ajaxRequest->index();
@@ -34,12 +34,14 @@ if ($status !== null) {
     echo $notif->renderDialog();
 }
 
-$this->title = $title;
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Item : ' . $modelPromo['title'];
+$this->params['breadcrumbs'][] = ['label' => $isActive ? Yii::t('app', 'Active Promo') : Yii::t('app', 'Inactive Promo'), 'url' => [$isActive ? 'promo/index-active' : 'promo/index-not-active']];
+$this->params['breadcrumbs'][] = ['label' => $modelPromo['title'], 'url' => ['promo/view', 'id' => $modelPromo['id'], 'isActive' => $isActive]];
+$this->params['breadcrumbs'][] = 'Item';
 
 echo $ajaxRequest->component(); ?>
 
-<div class="promo-index">
+<div class="promo-item-index">
 
     <?php
     $modalDialog = new ModalDialog([
@@ -49,7 +51,7 @@ echo $ajaxRequest->component(); ?>
     ]);
 
     echo GridView::widget([
-        'id' => 'grid-view-promo',
+        'id' => 'grid-view-promo-item',
         'dataProvider' => $dataProvider,
         'pjax' => false,
         'bordered' => false,
@@ -71,7 +73,7 @@ echo $ajaxRequest->component(); ?>
         ],
         'toolbar' => [
             [
-                'content' => Html::a('<i class="fa fa-sync-alt"></i>', [$isActive ? 'index-active' : 'index-not-active'], [
+                'content' => Html::a('<i class="fa fa-sync-alt"></i>', ['index', 'id' => $modelPromo['id'], 'isActive' => $isActive], [
                     'id' => 'refresh',
                     'class' => 'btn btn-success',
                     'data-placement' => 'top',
@@ -84,34 +86,35 @@ echo $ajaxRequest->component(); ?>
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'title',
+            'id',
+            'amount',
             [
-                'attribute' => 'type',
+                'attribute' => 'not_active',
                 'format' => 'raw',
-                'filter' => ['Voucher-Cashback' => 'Voucher-Cashback'],
+                'filter' =>  [true => 'True', false => 'False'],
+                'value' => function ($model, $index, $widget) {
+                
+                   return Html::checkbox('not_active[]', $model->not_active, ['value' => $index, 'disabled' => 'disabled']);
+                },
             ],
-            'item_amount',
-            'date_start',
-            'date_end',
-
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '
                     <div class="btn-container hide">
                         <div class="visible-lg visible-md">
-                            <div class="btn-group btn-group-md" role="group" style="width: 155px">
-                                {view}{update}{delete}{promo-item}
+                            <div class="btn-group btn-group-md" role="group" style="width: 80px">
+                                {view}{update}
                             </div>
                         </div>
                         <div class="visible-sm visible-xs">
-                            <div class="btn-group btn-group-lg" role="group" style="width: 205px">
-                                {view}{update}{delete}{promo-item}
+                            <div class="btn-group btn-group-lg" role="group" style="width: 104px">
+                                {view}{update}
                             </div>
                         </div>
                     </div>',
                 'buttons' => [
                     'view' => function($url, $model, $key) use ($isActive) {
-                        return Html::a('<i class="fa fa-search-plus"></i>', ['view', 'id' => $model->id, 'isActive' => $isActive], [
+                        return Html::a('<i class="fa fa-search-plus"></i>', ['view', 'id' => $model['id'], 'isActive' => $isActive], [
                             'id' => 'view',
                             'class' => 'btn btn-primary',
                             'data-toggle' => 'tooltip',
@@ -120,33 +123,12 @@ echo $ajaxRequest->component(); ?>
                         ]);
                     },
                     'update' => function($url, $model, $key) use ($isActive) {
-                        return Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id, 'isActive' => $isActive], [
+                        return Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model['id'], 'isActive' => $isActive], [
                             'id' => 'update',
                             'class' => 'btn btn-success',
                             'data-toggle' => 'tooltip',
                             'data-placement' => 'top',
                             'title' => 'Edit',
-                        ]);
-                    },
-                    'delete' => function($url, $model, $key) use ($isActive) {
-                        return Html::a('<i class="fa fa-trash-alt"></i>', ['delete', 'id' => $model->id, 'isActive' => $isActive], [
-                            'id' => 'delete',
-                            'class' => 'btn btn-danger',
-                            'data-toggle' => 'tooltip',
-                            'data-placement' => 'top',
-                            'data-not-ajax' => 1,
-                            'title' => 'Delete',
-                            'model-id' => $model->id,
-                            'model-name' => $model->title,
-                        ]);
-                    },
-                    'promo-item' =>  function($url, $model, $key) use ($isActive) {
-                        return Html::a('<i class="fa fa-percentage"></i>', ['promo-item/index', 'id' => $model->id, 'isActive' => $isActive], [
-                            'id' => 'promo-item',
-                            'class' => 'btn btn-default',
-                            'data-toggle' => 'tooltip',
-                            'data-placement' => 'top',
-                            'title' => 'Item',
                         ]);
                     },
                 ]
@@ -156,7 +138,7 @@ echo $ajaxRequest->component(); ?>
             'class' => 'table table-striped table-hover'
         ],
         'rowOptions' => function ($model, $key, $index, $grid) {
-            return ['id' => $model['id'], 'class' => 'row-grid-view-promo', 'style' => 'cursor: pointer;'];
+            return ['id' => $model['id'], 'class' => 'row-grid-view-promo-item', 'style' => 'cursor: pointer;'];
         },
         'pager' => [
             'firstPageLabel' => '<i class="fa fa-angle-double-left"></i>',
@@ -171,13 +153,19 @@ echo $ajaxRequest->component(); ?>
 <?php
 echo $modalDialog->renderDialog();
 
+$this->registerCssFile($this->params['assetCommon']->baseUrl . '/plugins/icheck/skins/all.css', ['depends' => 'yii\web\YiiAsset']);
+
+$this->registerJsFile($this->params['assetCommon']->baseUrl . '/plugins/icheck/icheck.min.js', ['depends' => 'yii\web\YiiAsset']);
+
 $jscript = ''
+    . Yii::$app->params['checkbox-radio-script']()
+    . '$(".iCheck-helper").parent().removeClass("disabled");'
     . $modalDialog->getScript() . '
 
     $("div.container.body").off("click");
     $("div.container.body").on("click", function(event) {
 
-        if ($(event.target).parent(".row-grid-view-promo").length > 0) {
+        if ($(event.target).parent(".row-grid-view-promo-item").length > 0) {
 
             $("td").not(event.target).popover("destroy");
         } else {
@@ -185,10 +173,10 @@ $jscript = ''
         }
     });
 
-    $(".row-grid-view-promo").popover({
+    $(".row-grid-view-promo-item").popover({
         trigger: "click",
         placement: "top",
-        container: ".row-grid-view-promo",
+        container: ".row-grid-view-promo-item",
         html: true,
         selector: "td",
         content: function () {
@@ -198,7 +186,7 @@ $jscript = ''
         }
     });
 
-    $(".row-grid-view-promo").on("shown.bs.popover", function(event) {
+    $(".row-grid-view-promo-item").on("shown.bs.popover", function(event) {
 
         $(\'[data-toggle="tooltip"]\').tooltip();
 
