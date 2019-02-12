@@ -61,7 +61,7 @@ class PromoController extends BaseController
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($isActive, $save = null)
+    public function actionCreate($save = null)
     {
         $render = 'create';
 
@@ -73,7 +73,13 @@ class PromoController extends BaseController
                 
                 Yii::$app->formatter->timeZone = 'Asia/Jakarta';
                 
-                $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
+                if (!empty($post['Promo']['date_end'])) {
+                    
+                    $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
+                } else {
+                    
+                    $isActive = !$post['Promo']['not_active'];
+                }
                 
                 Yii::$app->formatter->timeZone = 'UTC';
 
@@ -97,7 +103,7 @@ class PromoController extends BaseController
 
         return $this->render($render, [
             'model' => $model,
-            'isActive' => $isActive
+            'isActive' => !empty($isActive) ? $isActive : null
         ]);
     }
 
@@ -117,7 +123,13 @@ class PromoController extends BaseController
                 
                 Yii::$app->formatter->timeZone = 'Asia/Jakarta';
                 
-                $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
+                if (!empty($post['Promo']['date_end'])) {
+                    
+                    $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
+                } else {
+                    
+                    $isActive = !$post['Promo']['not_active'];
+                }
                 
                 Yii::$app->formatter->timeZone = 'UTC';
 

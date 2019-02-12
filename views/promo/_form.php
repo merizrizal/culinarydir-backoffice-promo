@@ -47,7 +47,7 @@ echo $ajaxRequest->component(); ?>
                 <?php
                 $form = ActiveForm::begin([
                     'id' => 'promo-form',
-                    'action' => $model->isNewRecord ? ['create', 'isActive' => $isActive] : ['update', 'id' => $model->id, 'isActive' => $isActive],
+                    'action' => $model->isNewRecord ? ['create'] : ['update', 'id' => $model->id, 'isActive' => $isActive],
                     'options' => [
 
                     ],
@@ -69,22 +69,6 @@ echo $ajaxRequest->component(); ?>
                             </div>',
                     ]
                 ]); ?>
-
-                    <div class="x_title">
-
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                
-                                    <?php
-                                    if (!$model->isNewRecord)
-                                        echo Html::a('<i class="fa fa-upload"></i> Create', ['create', 'isActive' => $isActive], ['class' => 'btn btn-success']); ?>
-                                        
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
 
                     <div class="x_content">
 
@@ -131,7 +115,7 @@ echo $ajaxRequest->component(); ?>
                                     <?php
                                     $icon = '<i class="fa fa-save"></i> ';
                                     echo Html::submitButton($model->isNewRecord ? $icon . 'Save' : $icon . 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']);
-                                    echo Html::a('<i class="fa fa-times"></i> Cancel', [$isActive ? 'index-active' : 'index-not-active'], ['class' => 'btn btn-default']); ?>
+                                    echo Html::a('<i class="fa fa-times"></i> Cancel', [!empty($isActive) ? ($isActive ? 'index-active' : 'index-not-active') : 'index-active'], ['class' => 'btn btn-default']); ?>
                                 
                                 </div>
                             </div>

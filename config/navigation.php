@@ -6,12 +6,17 @@ return [
                 'label' => 'Promo',
                 'iconClass' => 'fa fa-percentage',
                 'navigation' => [
-                    'pndgApplication' => [
+                    'createPromo' => [
+                        'label' => Yii::t('app', 'Create Promo'),
+                        'url' => ['promo/promo/create'],
+                        'isDirect' => false,
+                    ],
+                    'activePromo' => [
                         'label' => Yii::t('app', 'Active Promo'),
                         'url' => ['promo/promo/index-active'],
                         'isDirect' => false,
                     ],
-                    'icorctApplication' => [
+                    'notActivePromo' => [
                         'label' => Yii::t('app', 'Inactive Promo'),
                         'url' => ['promo/promo/index-not-active'],
                         'isDirect' => false,

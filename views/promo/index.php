@@ -37,9 +37,7 @@ if ($status !== null) {
 $this->title = $title;
 $this->params['breadcrumbs'][] = $this->title;
 
-$ajaxRequest->createUrl = ['create', 'isActive' => $isActive];
-
-echo $ajaxRequest->component(true); ?>
+echo $ajaxRequest->component(); ?>
 
 <div class="promo-index">
 
