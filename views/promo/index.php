@@ -9,6 +9,8 @@ use sycomponent\NotificationDialog;
 /* @var $this yii\web\View */
 /* @var $searchModel core\models\search\PromoSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $isActive boolean */
+/* @var $title string */
 
 $ajaxRequest = new AjaxRequest([
     'modelClass' => 'Promo',
@@ -32,8 +34,10 @@ if ($status !== null) {
     echo $notif->renderDialog();
 }
 
-$this->title = Yii::t('app', 'Promo');
+$this->title = $title;
 $this->params['breadcrumbs'][] = $this->title;
+
+$ajaxRequest->createUrl = ['create', 'isActive' => $isActive];
 
 echo $ajaxRequest->component(true); ?>
 
@@ -44,9 +48,9 @@ echo $ajaxRequest->component(true); ?>
         'clickedComponent' => 'a#delete',
         'modelAttributeId' => 'model-id',
         'modelAttributeName' => 'model-name',
-    ]); ?>
+    ]);
 
-    <?= GridView::widget([
+    echo GridView::widget([
         'id' => 'grid-view-promo',
         'dataProvider' => $dataProvider,
         'pjax' => false,
@@ -69,7 +73,7 @@ echo $ajaxRequest->component(true); ?>
         ],
         'toolbar' => [
             [
-                'content' => Html::a('<i class="fa fa-sync-alt"></i>', ['index'], [
+                'content' => Html::a('<i class="fa fa-sync-alt"></i>', [$isActive ? 'index-active' : 'index-not-active'], [
                     'id' => 'refresh',
                     'class' => 'btn btn-success',
                     'data-placement' => 'top',
@@ -91,15 +95,6 @@ echo $ajaxRequest->component(true); ?>
             'item_amount',
             'date_start',
             'date_end',
-            [
-                'attribute' => 'not_active',
-                'format' => 'raw',
-                'filter' =>  [true => 'True', false => 'False'],
-                'value' => function ($model, $index, $widget) {
-                
-                    return Html::checkbox('not_active[]', $model->not_active, ['value' => $index, 'disabled' => 'disabled']);
-                },
-            ],
 
             [
                 'class' => 'yii\grid\ActionColumn',
@@ -117,8 +112,8 @@ echo $ajaxRequest->component(true); ?>
                         </div>
                     </div>',
                 'buttons' => [
-                    'view' => function($url, $model, $key) {
-                        return Html::a('<i class="fa fa-search-plus"></i>', $url, [
+                    'view' => function($url, $model, $key) use ($isActive) {
+                        return Html::a('<i class="fa fa-search-plus"></i>', ['view', 'id' => $model->id, 'isActive' => $isActive], [
                             'id' => 'view',
                             'class' => 'btn btn-primary',
                             'data-toggle' => 'tooltip',
@@ -126,8 +121,8 @@ echo $ajaxRequest->component(true); ?>
                             'title' => 'View',
                         ]);
                     },
-                    'update' => function($url, $model, $key) {
-                        return Html::a('<i class="fa fa-pencil-alt"></i>', $url, [
+                    'update' => function($url, $model, $key) use ($isActive) {
+                        return Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id, 'isActive' => $isActive], [
                             'id' => 'update',
                             'class' => 'btn btn-success',
                             'data-toggle' => 'tooltip',
@@ -135,8 +130,8 @@ echo $ajaxRequest->component(true); ?>
                             'title' => 'Edit',
                         ]);
                     },
-                    'delete' => function($url, $model, $key) {
-                        return Html::a('<i class="fa fa-trash-alt"></i>', $url, [
+                    'delete' => function($url, $model, $key) use ($isActive) {
+                        return Html::a('<i class="fa fa-trash-alt"></i>', ['delete', 'id' => $model->id, 'isActive' => $isActive], [
                             'id' => 'delete',
                             'class' => 'btn btn-danger',
                             'data-toggle' => 'tooltip',
@@ -169,13 +164,7 @@ echo $ajaxRequest->component(true); ?>
 <?php
 echo $modalDialog->renderDialog();
 
-$this->registerCssFile($this->params['assetCommon']->baseUrl . '/plugins/icheck/skins/all.css', ['depends' => 'yii\web\YiiAsset']);
-
-$this->registerJsFile($this->params['assetCommon']->baseUrl . '/plugins/icheck/icheck.min.js', ['depends' => 'yii\web\YiiAsset']);
-
 $jscript = ''
-    . Yii::$app->params['checkbox-radio-script']()
-    . '$(".iCheck-helper").parent().removeClass("disabled");'
     . $modalDialog->getScript() . '
 
     $("div.container.body").off("click");

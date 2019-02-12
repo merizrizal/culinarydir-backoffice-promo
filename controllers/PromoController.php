@@ -9,7 +9,6 @@ use backoffice\controllers\BaseController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
-use yii\widgets\ActiveForm;
 
 /**
  * PromoController implements the CRUD actions for Promo model.
@@ -32,32 +31,28 @@ class PromoController extends BaseController
                 ],
             ]);
     }
-
-    /**
-     * Lists all Promo models.
-     * @return mixed
-     */
-    public function actionIndex()
+    
+    public function actionIndexActive()
     {
-        $searchModel = new PromoSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        return $this->index(true, Yii::t('app', 'Active Promo'));
     }
-
+    
+    public function actionIndexNotActive()
+    {
+        return $this->index(false, Yii::t('app', 'Inactive Promo'));
+    }
+    
     /**
      * Displays a single Promo model.
      * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView($id, $isActive)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'isActive' => $isActive
         ]);
     }
 
@@ -66,19 +61,21 @@ class PromoController extends BaseController
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($save = null)
+    public function actionCreate($isActive, $save = null)
     {
         $render = 'create';
 
         $model = new Promo();
 
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(($post = Yii::$app->request->post()))) {
 
-            if (empty($save)) {
-
-                Yii::$app->response->format = Response::FORMAT_JSON;
-                return ActiveForm::validate($model);
-            } else {
+            if (!empty($save)) {
+                
+                Yii::$app->formatter->timeZone = 'Asia/Jakarta';
+                
+                $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
+                
+                Yii::$app->formatter->timeZone = 'UTC';
 
                 if ($model->save()) {
 
@@ -100,6 +97,7 @@ class PromoController extends BaseController
 
         return $this->render($render, [
             'model' => $model,
+            'isActive' => $isActive
         ]);
     }
 
@@ -109,17 +107,19 @@ class PromoController extends BaseController
      * @param string $id
      * @return mixed
      */
-    public function actionUpdate($id, $save = null)
+    public function actionUpdate($id, $isActive, $save = null)
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(($post = Yii::$app->request->post()))) {
 
-            if (empty($save)) {
-
-                Yii::$app->response->format = Response::FORMAT_JSON;
-                return ActiveForm::validate($model);
-            } else {
+            if (!empty($save)) {
+                
+                Yii::$app->formatter->timeZone = 'Asia/Jakarta';
+                
+                $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
+                
+                Yii::$app->formatter->timeZone = 'UTC';
 
                 if ($model->save()) {
 
@@ -137,6 +137,7 @@ class PromoController extends BaseController
 
         return $this->render('update', [
             'model' => $model,
+            'isActive' => $isActive
         ]);
     }
 
@@ -147,7 +148,7 @@ class PromoController extends BaseController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $isActive)
     {
         if (($model = $this->findModel($id)) !== false) {
 
@@ -175,7 +176,7 @@ class PromoController extends BaseController
 
         $return = [];
 
-        $return['url'] = Yii::$app->urlManager->createUrl([$this->module->id . '/promo/index']);
+        $return['url'] = Yii::$app->urlManager->createUrl([$this->module->id . '/promo/' . ($isActive ? 'index-active' : 'index-not-active')]);
 
         Yii::$app->response->format = Response::FORMAT_JSON;
         return $return;
@@ -195,5 +196,36 @@ class PromoController extends BaseController
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+    
+    private function index($isActive, $title)
+    {
+        $searchModel = new PromoSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
+        Yii::$app->formatter->timeZone = 'Asia/Jakarta';
+        
+        if ($isActive) {
+            
+            $dataProvider->query
+                ->andWhere(['not_active' => false])
+                ->andWhere(['OR', ['>=', 'date_end', Yii::$app->formatter->asDate(time())], ['date_end' => null]])
+                ->distinct();
+        } else {
+            
+            $dataProvider->query
+                ->andWhere(['not_active' => true])
+                ->orWhere(['<', 'date_end', Yii::$app->formatter->asDate(time())])
+                ->distinct();
+        }
+        
+        Yii::$app->formatter->timeZone = 'UTC';
+        
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'isActive' => $isActive,
+            'title' => $title
+        ]);
     }
 }

@@ -8,6 +8,7 @@ use sycomponent\NotificationDialog;
 
 /* @var $this yii\web\View */
 /* @var $model core\models\Promo */
+/* @var $isActive boolean */
 
 $ajaxRequest = new AjaxRequest([
     'modelClass' => 'Promo',
@@ -32,7 +33,7 @@ if ($status !== null) {
 }
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Promo'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $isActive ? Yii::t('app', 'Active Promo') : Yii::t('app', 'Inactive Promo'), 'url' => [$isActive ? 'index-active' : 'index-not-active']];
 $this->params['breadcrumbs'][] = $this->title;
 
 echo $ajaxRequest->component(); ?>
@@ -45,19 +46,19 @@ echo $ajaxRequest->component(); ?>
 
                 <div class="x_content">
 
-                    <?= Html::a('<i class="fa fa-upload"></i> Create', ['create'], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="fa fa-upload"></i> Create', ['create', 'isActive' => $isActive], ['class' => 'btn btn-success']) ?>
 
-                    <?= Html::a('<i class="fa fa-pencil-alt"></i> Edit', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="fa fa-pencil-alt"></i> Edit', ['update', 'id' => $model->id, 'isActive' => $isActive], ['class' => 'btn btn-primary']) ?>
 
-                    <?= Html::a('<i class="fa fa-trash-alt"></i> Delete', ['delete', 'id' => $model->id], [
-                            'id' => 'delete',
-                            'class' => 'btn btn-danger',
-                            'data-not-ajax' => 1,
-                            'model-id' => $model->id,
-                            'model-name' => $model->title,
-                        ]) ?>
+                    <?= Html::a('<i class="fa fa-trash-alt"></i> Delete', ['delete', 'id' => $model->id, 'isActive' => $isActive], [
+                        'id' => 'delete',
+                        'class' => 'btn btn-danger',
+                        'data-not-ajax' => 1,
+                        'model-id' => $model->id,
+                        'model-name' => $model->title,
+                    ]) ?>
 
-                    <?= Html::a('<i class="fa fa-times"></i> Cancel', ['index'], ['class' => 'btn btn-default']) ?>
+                    <?= Html::a('<i class="fa fa-times"></i> Cancel', [$isActive ? 'index-active' : 'index-not-active'], ['class' => 'btn btn-default']) ?>
 
                     <div class="clearfix" style="margin-top: 15px"></div>
 

@@ -13,7 +13,7 @@ class PromoModule extends \yii\base\Module
      * {@inheritdoc}
      */
     public $controllerNamespace = 'backoffice\modules\promo\controllers';
-    public $defaultRoute = 'promo/index';
+    public $defaultRoute = 'promo/index-active';
     public $name = 'Promo';
 
     /**

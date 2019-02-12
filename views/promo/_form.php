@@ -10,6 +10,7 @@ use sycomponent\NotificationDialog;
 /* @var $this yii\web\View */
 /* @var $model core\models\Promo */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $isActive boolean */
 
 kartik\select2\Select2Asset::register($this);
 kartik\select2\ThemeKrajeeAsset::register($this);
@@ -46,7 +47,7 @@ echo $ajaxRequest->component(); ?>
                 <?php
                 $form = ActiveForm::begin([
                     'id' => 'promo-form',
-                    'action' => $model->isNewRecord ? ['create'] : ['update', 'id' => $model->id],
+                    'action' => $model->isNewRecord ? ['create', 'isActive' => $isActive] : ['update', 'id' => $model->id, 'isActive' => $isActive],
                     'options' => [
 
                     ],
@@ -77,7 +78,7 @@ echo $ajaxRequest->component(); ?>
                                 
                                     <?php
                                     if (!$model->isNewRecord)
-                                        echo Html::a('<i class="fa fa-upload"></i> Create', ['create'], ['class' => 'btn btn-success']); ?>
+                                        echo Html::a('<i class="fa fa-upload"></i> Create', ['create', 'isActive' => $isActive], ['class' => 'btn btn-success']); ?>
                                         
                                 </div>
                             </div>
@@ -103,7 +104,7 @@ echo $ajaxRequest->component(); ?>
                             'parts' => [
                                 '{inputClass}' => 'col-lg-4'
                             ],
-                        ])->textInput() ?>
+                        ])->textInput(['disabled' => !$model->isNewRecord]) ?>
                     
                          <?= $form->field($model, 'date_start', [
                             'parts' => [
@@ -130,7 +131,7 @@ echo $ajaxRequest->component(); ?>
                                     <?php
                                     $icon = '<i class="fa fa-save"></i> ';
                                     echo Html::submitButton($model->isNewRecord ? $icon . 'Save' : $icon . 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']);
-                                    echo Html::a('<i class="fa fa-times"></i> Cancel', ['index'], ['class' => 'btn btn-default']); ?>
+                                    echo Html::a('<i class="fa fa-times"></i> Cancel', [$isActive ? 'index-active' : 'index-not-active'], ['class' => 'btn btn-default']); ?>
                                 
                                 </div>
                             </div>
