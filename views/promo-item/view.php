@@ -35,7 +35,7 @@ if ($status !== null) {
 $this->title = 'Promo Item : ' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => $isActive ? Yii::t('app', 'Active Promo') : Yii::t('app', 'Inactive Promo'), 'url' => [$isActive ? 'promo/index-active' : 'promo/index-not-active']];
 $this->params['breadcrumbs'][] = ['label' => $model->promo->title, 'url' => ['promo/view', 'id' => $model->promo_id, 'isActive' => $isActive]];
-$this->params['breadcrumbs'][] = ['label' => 'Item', 'url' => ['index', 'id' => $model->promo->id, 'isActive' => $isActive]];
+$this->params['breadcrumbs'][] = ['label' => 'Item', 'url' => ['index', 'id' => $model->promo_id, 'isActive' => $isActive]];
 $this->params['breadcrumbs'][] = 'View Item';
 
 echo $ajaxRequest->component(); ?>
@@ -50,7 +50,7 @@ echo $ajaxRequest->component(); ?>
 
                     <?= Html::a('<i class="fa fa-pencil-alt"></i> Edit', ['update', 'id' => $model->id, 'isActive' => $isActive], ['class' => 'btn btn-primary']) ?>
 
-                    <?= Html::a('<i class="fa fa-times"></i> Cancel', ['index', 'id' => $model->promo->id, 'isActive' => $isActive], ['class' => 'btn btn-default']) ?>
+                    <?= Html::a('<i class="fa fa-times"></i> Cancel', ['index', 'id' => $model->promo_id, 'isActive' => $isActive], ['class' => 'btn btn-default']) ?>
 
                     <div class="clearfix" style="margin-top: 15px"></div>
 

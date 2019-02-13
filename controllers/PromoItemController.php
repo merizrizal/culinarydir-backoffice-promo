@@ -9,8 +9,6 @@ use core\models\search\PromoItemSearch;
 use backoffice\controllers\BaseController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\web\Response;
-use yii\widgets\ActiveForm;
 
 /**
  * PromoItemController implements the CRUD actions for PromoItem model.
@@ -82,11 +80,7 @@ class PromoItemController extends BaseController
 
         if ($model->load(Yii::$app->request->post())) {
 
-            if (empty($save)) {
-
-                Yii::$app->response->format = Response::FORMAT_JSON;
-                return ActiveForm::validate($model);
-            } else {
+            if (!empty($save)) {
 
                 if ($model->save()) {
 
