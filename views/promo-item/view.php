@@ -61,7 +61,7 @@ echo $ajaxRequest->component(); ?>
                         ],
                         'attributes' => [
                             'id',
-                            'amount',
+                            'amount:currency',
                             [
                                 'attribute' => 'not_active',
                                 'format' => 'raw',

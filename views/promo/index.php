@@ -23,7 +23,7 @@ $message1 = Yii::$app->session->getFlash('message1');
 $message2 = Yii::$app->session->getFlash('message2');
 
 if ($status !== null) {
-    
+
     $notif = new NotificationDialog([
         'status' => $status,
         'message1' => $message1,
@@ -91,6 +91,7 @@ echo $ajaxRequest->component(); ?>
                 'filter' => ['Voucher-Cashback' => 'Voucher-Cashback'],
             ],
             'item_amount',
+            'amount:currency',
             'date_start',
             'date_end',
 

@@ -32,17 +32,17 @@ class PromoController extends BaseController
                 ],
             ]);
     }
-    
+
     public function actionIndexActive()
     {
         return $this->index(true, Yii::t('app', 'Active Promo'));
     }
-    
+
     public function actionIndexNotActive()
     {
         return $this->index(false, Yii::t('app', 'Inactive Promo'));
     }
-    
+
     /**
      * Displays a single Promo model.
      * @param string $id
@@ -71,33 +71,33 @@ class PromoController extends BaseController
         if ($model->load(($post = Yii::$app->request->post()))) {
 
             if (!empty($save)) {
-                
+
                 $flag = false;
                 $transaction = Yii::$app->db->beginTransaction();
-                
+
                 if (($flag = $model->save())) {
-                
+
                     Yii::$app->formatter->timeZone = 'Asia/Jakarta';
-                    
+
                     if (!empty($post['Promo']['date_end'])) {
-                        
+
                         $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
                     } else {
-                        
+
                         $isActive = !$post['Promo']['not_active'];
                     }
-                    
+
                     Yii::$app->formatter->timeZone = 'UTC';
-                    
+
                     for ($i = 1; $i <= $post['Promo']['item_amount']; $i++) {
-                        
+
                         $modelPromoItem = new PromoItem();
                         $modelPromoItem->id = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6) . '_' . $i;
                         $modelPromoItem->promo_id = $model->id;
                         $modelPromoItem->amount = $post['Promo']['amount'];
-                        
+
                         if (!($flag = $modelPromoItem->save())) {
-                            
+
                             break;
                         }
                     }
@@ -108,9 +108,9 @@ class PromoController extends BaseController
                     Yii::$app->session->setFlash('status', 'success');
                     Yii::$app->session->setFlash('message1', Yii::t('app', 'Create Data Is Success'));
                     Yii::$app->session->setFlash('message2', Yii::t('app', 'Create data process is success. Data has been saved'));
-                    
+
                     $render = 'view';
-                    
+
                     $transaction->commit();
                 } else {
 
@@ -119,7 +119,7 @@ class PromoController extends BaseController
                     Yii::$app->session->setFlash('status', 'danger');
                     Yii::$app->session->setFlash('message1', Yii::t('app', 'Create Data Is Fail'));
                     Yii::$app->session->setFlash('message2', Yii::t('app', 'Create data process is fail. Data fail to save'));
-                    
+
                     $transaction->rollBack();
                 }
             }
@@ -127,7 +127,7 @@ class PromoController extends BaseController
 
         return $this->render($render, [
             'model' => $model,
-            'isActive' => !empty($isActive) ? $isActive : null
+            'isActive' => !empty($isActive) ? $isActive : true
         ]);
     }
 
@@ -144,19 +144,19 @@ class PromoController extends BaseController
         if ($model->load(($post = Yii::$app->request->post()))) {
 
             if (!empty($save)) {
-                    
+
                 Yii::$app->formatter->timeZone = 'Asia/Jakarta';
-                
+
                 if (!empty($post['Promo']['date_end'])) {
-                    
+
                     $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
                 } else {
-                    
+
                     $isActive = !$post['Promo']['not_active'];
                 }
-                
+
                 Yii::$app->formatter->timeZone = 'UTC';
-                
+
                 if ($model->save()) {
 
                     Yii::$app->session->setFlash('status', 'success');
@@ -233,30 +233,28 @@ class PromoController extends BaseController
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    
+
     private function index($isActive, $title)
     {
         $searchModel = new PromoSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        
+
         Yii::$app->formatter->timeZone = 'Asia/Jakarta';
-        
+
         if ($isActive) {
-            
+
             $dataProvider->query
                 ->andWhere(['not_active' => false])
-                ->andWhere(['OR', ['>=', 'date_end', Yii::$app->formatter->asDate(time())], ['date_end' => null]])
-                ->distinct();
+                ->andWhere(['OR', ['>=', 'date_end', Yii::$app->formatter->asDate(time())], ['date_end' => null]]);
         } else {
-            
+
             $dataProvider->query
                 ->andWhere(['not_active' => true])
-                ->orWhere(['<', 'date_end', Yii::$app->formatter->asDate(time())])
-                ->distinct();
+                ->orWhere(['<', 'date_end', Yii::$app->formatter->asDate(time())]);
         }
-        
+
         Yii::$app->formatter->timeZone = 'UTC';
-        
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

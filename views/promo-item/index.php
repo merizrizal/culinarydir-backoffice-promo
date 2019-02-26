@@ -23,7 +23,7 @@ $message1 = Yii::$app->session->getFlash('message1');
 $message2 = Yii::$app->session->getFlash('message2');
 
 if ($status !== null) {
-    
+
     $notif = new NotificationDialog([
         'status' => $status,
         'message1' => $message1,
@@ -87,13 +87,13 @@ echo $ajaxRequest->component(); ?>
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'amount',
+            'amount:currency',
             [
                 'attribute' => 'not_active',
                 'format' => 'raw',
                 'filter' =>  [true => 'True', false => 'False'],
                 'value' => function ($model, $index, $widget) {
-                
+
                    return Html::checkbox('not_active[]', $model->not_active, ['value' => $index, 'disabled' => 'disabled']);
                 },
             ],

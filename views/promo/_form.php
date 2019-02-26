@@ -73,9 +73,9 @@ echo $ajaxRequest->component(); ?>
                     <div class="x_content">
 
                         <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-                    
+
                         <?= $form->field($model, 'type')->dropDownList(['Voucher-Cashback' => 'Voucher-Cashback', ], ['prompt' => '', 'style' => 'width:100%']) ?>
-                    
+
                         <?= $form->field($model, 'amount', [
                             'parts' => [
                                 '{inputClass}' => 'col-lg-4'
@@ -84,13 +84,13 @@ echo $ajaxRequest->component(); ?>
                             'maskedInputOptions' => Yii::$app->params['maskedInputOptions'],
                             'disabled' => !$model->isNewRecord
                         ]) ?>
-                    
-                        <?= $form->field($model, 'item_amount', [ 
+
+                        <?= $form->field($model, 'item_amount', [
                             'parts' => [
                                 '{inputClass}' => 'col-lg-4'
                             ],
                         ])->textInput(['disabled' => !$model->isNewRecord]) ?>
-                    
+
                          <?= $form->field($model, 'date_start', [
                             'parts' => [
                                 '{inputClass}' => 'col-lg-4'
@@ -106,18 +106,18 @@ echo $ajaxRequest->component(); ?>
                         ])->widget(DateTimePicker::className(), [
                             'pluginOptions' => Yii::$app->params['datepickerOptions'],
                         ]) ?>
-                    
+
                         <?= $form->field($model, 'not_active')->checkbox(['value' => true], false) ?>
 
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-lg-offset-3 col-lg-6">
-                                
+
                                     <?php
                                     $icon = '<i class="fa fa-save"></i> ';
                                     echo Html::submitButton($model->isNewRecord ? $icon . 'Save' : $icon . 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']);
-                                    echo Html::a('<i class="fa fa-times"></i> Cancel', [!empty($isActive) ? ($isActive ? 'index-active' : 'index-not-active') : 'index-active'], ['class' => 'btn btn-default']); ?>
-                                
+                                    echo Html::a('<i class="fa fa-times"></i> Cancel', [$isActive ? 'index-active' : 'index-not-active'], ['class' => 'btn btn-default']); ?>
+
                                 </div>
                             </div>
                         </div>
