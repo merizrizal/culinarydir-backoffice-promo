@@ -198,9 +198,7 @@ class PromoController extends BaseController
 
             try {
                 
-                $flag = PromoItem::deleteAll(['promo_id' => $model['id']]);
-                
-                if ($flag) {
+                if (($flag = PromoItem::deleteAll(['promo_id' => $model['id']]))) {
                     
                     $flag = $model->delete();
                 }
