@@ -46,7 +46,7 @@ echo $ajaxRequest->component(); ?>
 
                 <div class="x_content">
 
-                    <?= Html::a('<i class="fa fa-pencil-alt"></i> Edit', ['update', 'id' => $model->id, 'isActive' => $isActive], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="fa fa-pencil-alt"></i> Edit', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
                     <?= Html::a('<i class="fa fa-trash-alt"></i> Delete', ['delete', 'id' => $model->id, 'isActive' => $isActive], [
                         'id' => 'delete',

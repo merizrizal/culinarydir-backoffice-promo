@@ -120,8 +120,8 @@ echo $ajaxRequest->component(); ?>
                             'title' => 'View',
                         ]);
                     },
-                    'update' => function($url, $model, $key) use ($isActive) {
-                        return Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id, 'isActive' => $isActive], [
+                    'update' => function($url, $model, $key) {
+                        return Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], [
                             'id' => 'update',
                             'class' => 'btn btn-success',
                             'data-toggle' => 'tooltip',

@@ -47,7 +47,7 @@ echo $ajaxRequest->component(); ?>
                 <?php
                 $form = ActiveForm::begin([
                     'id' => 'promo-form',
-                    'action' => $model->isNewRecord ? ['create'] : ['update', 'id' => $model->id, 'isActive' => $isActive],
+                    'action' => $model->isNewRecord ? ['create'] : ['update', 'id' => $model->id],
                     'options' => [
 
                     ],

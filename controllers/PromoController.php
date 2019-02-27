@@ -67,6 +67,7 @@ class PromoController extends BaseController
         $render = 'create';
 
         $model = new Promo();
+        $isActive = true;
 
         if ($model->load(($post = Yii::$app->request->post()))) {
 
@@ -127,7 +128,7 @@ class PromoController extends BaseController
 
         return $this->render($render, [
             'model' => $model,
-            'isActive' => !empty($isActive) ? $isActive : true
+            'isActive' => $isActive
         ]);
     }
 
@@ -137,27 +138,27 @@ class PromoController extends BaseController
      * @param string $id
      * @return mixed
      */
-    public function actionUpdate($id, $isActive, $save = null)
+    public function actionUpdate($id, $save = null)
     {
         $model = $this->findModel($id);
+        
+        Yii::$app->formatter->timeZone = 'Asia/Jakarta';
+        
+        $isActive = !$model->not_active && ($model->date_end >= Yii::$app->formatter->asDate(time()));
 
         if ($model->load(($post = Yii::$app->request->post()))) {
 
             if (!empty($save)) {
 
-                Yii::$app->formatter->timeZone = 'Asia/Jakarta';
-
-                if (!empty($post['Promo']['date_end'])) {
-
-                    $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
-                } else {
-
-                    $isActive = !$post['Promo']['not_active'];
-                }
-
-                Yii::$app->formatter->timeZone = 'UTC';
-
                 if ($model->save()) {
+                    
+                    if (!empty($post['Promo']['date_end'])) {
+                        
+                        $isActive = !$post['Promo']['not_active'] && ($post['Promo']['date_end'] >= Yii::$app->formatter->asDate(time()));
+                    } else {
+                        
+                        $isActive = !$post['Promo']['not_active'];
+                    }
 
                     Yii::$app->session->setFlash('status', 'success');
                     Yii::$app->session->setFlash('message1', Yii::t('app', 'Update Data Is Success'));
@@ -170,6 +171,8 @@ class PromoController extends BaseController
                 }
             }
         }
+            
+        Yii::$app->formatter->timeZone = 'UTC';
 
         return $this->render('update', [
             'model' => $model,
@@ -190,9 +193,17 @@ class PromoController extends BaseController
 
             $flag = false;
             $error = '';
+            
+            $transaction = Yii::$app->db->beginTransaction();
 
             try {
-                $flag = $model->delete();
+                
+                $flag = PromoItem::deleteAll(['promo_id' => $model['id']]);
+                
+                if ($flag) {
+                    
+                    $flag = $model->delete();
+                }
             } catch (yii\db\Exception $exc) {
                 $error = Yii::$app->params['errMysql'][$exc->errorInfo[1]];
             }
@@ -203,11 +214,15 @@ class PromoController extends BaseController
             Yii::$app->session->setFlash('status', 'success');
             Yii::$app->session->setFlash('message1', Yii::t('app', 'Delete Is Success'));
             Yii::$app->session->setFlash('message2', Yii::t('app', 'Delete process is success. Data has been deleted'));
+            
+            $transaction->commit();
         } else {
 
             Yii::$app->session->setFlash('status', 'danger');
             Yii::$app->session->setFlash('message1', Yii::t('app', 'Delete Is Fail'));
             Yii::$app->session->setFlash('message2', Yii::t('app', 'Delete process is fail. Data fail to delete' . $error));
+            
+            $transaction->rollBack();
         }
 
         $return = [];
