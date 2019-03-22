@@ -6,6 +6,7 @@ use Yii;
 use core\models\Promo;
 use core\models\search\PromoSearch;
 use backoffice\controllers\BaseController;
+use sycomponent\Tools;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
@@ -75,6 +76,8 @@ class PromoController extends BaseController
 
                 $flag = false;
                 $transaction = Yii::$app->db->beginTransaction();
+                
+                $model->image = Tools::uploadFile('/img/promo/', $model, 'image', 'id', $model->id);
 
                 if (($flag = $model->save())) {
 
@@ -149,6 +152,8 @@ class PromoController extends BaseController
         if ($model->load(($post = Yii::$app->request->post()))) {
 
             if (!empty($save)) {
+                
+                $model->image = Tools::uploadFile('/img/promo/', $model, 'image', 'id', $model->id);
 
                 if ($model->save()) {
                     

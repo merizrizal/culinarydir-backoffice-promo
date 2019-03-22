@@ -72,6 +72,11 @@ echo $ajaxRequest->component(); ?>
                             'type',
                             'amount:currency',
                             'item_amount',
+                            [
+                                'attribute' => 'image',
+                                'format' => 'raw',
+                                'value' => Html::img(Yii::getAlias('@uploadsUrl') . $model->thumb('/img/promo/', 'image', 200, 200), ['class'=>'img-thumbnail']),
+                            ],
                             'date_start',
                             'date_end',
                             [

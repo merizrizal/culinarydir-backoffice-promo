@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\datetime\DateTimePicker;
+use kartik\file\FileInput;
 use kartik\number\NumberControl;
 use sycomponent\AjaxRequest;
 use sycomponent\NotificationDialog;
@@ -90,6 +91,19 @@ echo $ajaxRequest->component(); ?>
                                 '{inputClass}' => 'col-lg-4'
                             ],
                         ])->textInput(['disabled' => !$model->isNewRecord]) ?>
+                        
+                        <?= $form->field($model, 'image')->widget(FileInput::classname(), [
+                            'options' => [
+                                'accept' => 'image/*'
+                            ],
+                            'pluginOptions' => [
+                                'initialPreview' => [
+                                    Html::img(Yii::getAlias('@uploadsUrl') . $model->thumb('/img/promo/', 'image', 200, 200), ['class'=>'file-preview-image']),
+                                ],
+                                'showRemove' => false,
+                                'showUpload' => false,
+                            ]
+                        ]); ?>
 
                          <?= $form->field($model, 'date_start', [
                             'parts' => [
@@ -106,7 +120,7 @@ echo $ajaxRequest->component(); ?>
                         ])->widget(DateTimePicker::className(), [
                             'pluginOptions' => Yii::$app->params['datepickerOptions'],
                         ]) ?>
-
+                        
                         <?= $form->field($model, 'not_active')->checkbox(['value' => true], false) ?>
 
                         <div class="form-group">
