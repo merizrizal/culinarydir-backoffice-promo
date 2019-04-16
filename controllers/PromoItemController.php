@@ -40,7 +40,7 @@ class PromoItemController extends BaseController
     {
         $searchModel = new PromoItemSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->query->andWhere(['promo_id' => $id]);
+        $dataProvider->query->andWhere(['promo_item.promo_id' => $id]);
         
         $modelPromo = Promo::find()
             ->andWhere(['id' => $id])

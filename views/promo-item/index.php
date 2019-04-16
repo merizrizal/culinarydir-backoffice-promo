@@ -88,6 +88,8 @@ echo $ajaxRequest->component(); ?>
 
             'id',
             'amount:currency',
+            'businessClaimed.name',
+            'userPromoItem.user.username',
             [
                 'attribute' => 'not_active',
                 'format' => 'raw',
