@@ -266,9 +266,7 @@ class PromoController extends BaseController
                 ->andWhere(['OR', ['>=', 'date_end', Yii::$app->formatter->asDate(time())], ['date_end' => null]]);
         } else {
 
-            $dataProvider->query
-                ->andWhere(['not_active' => true])
-                ->orWhere(['<', 'date_end', Yii::$app->formatter->asDate(time())]);
+            $dataProvider->query->andWhere(['OR', ['<', 'date_end', Yii::$app->formatter->asDate(time())], ['not_active' => true]]);
         }
 
         Yii::$app->formatter->timeZone = 'UTC';
