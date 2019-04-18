@@ -72,6 +72,8 @@ echo $ajaxRequest->component(); ?>
                             'type',
                             'amount:currency',
                             'item_amount',
+                            'description',
+                            'minimum_amount_order:currency',
                             [
                                 'attribute' => 'image',
                                 'format' => 'raw',

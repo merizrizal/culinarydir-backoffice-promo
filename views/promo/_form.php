@@ -92,6 +92,16 @@ echo $ajaxRequest->component(); ?>
                             ],
                         ])->textInput(['disabled' => !$model->isNewRecord]) ?>
                         
+                        <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+                        
+                        <?= $form->field($model, 'minimum_amount_order', [
+                            'parts' => [
+                                '{inputClass}' => 'col-lg-4'
+                            ],
+                        ])->widget(NumberControl::className(), [
+                            'maskedInputOptions' => Yii::$app->params['maskedInputOptions'],
+                        ]) ?>
+                        
                         <?= $form->field($model, 'image')->widget(FileInput::classname(), [
                             'options' => [
                                 'accept' => 'image/*'
