@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use dosamigos\ckeditor\CKEditor;
 use kartik\datetime\DateTimePicker;
 use kartik\file\FileInput;
 use kartik\number\NumberControl;
@@ -92,7 +93,13 @@ echo $ajaxRequest->component(); ?>
                             ],
                         ])->textInput(['disabled' => !$model->isNewRecord]) ?>
                         
-                        <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+                        <?= $form->field($model, 'description', [
+                            'parts' => [
+                                '{inputClass}' => 'col-lg-8'
+                            ],
+                        ])->widget(CKEditor::className(), [
+                            'options' => ['rows' => 6],
+                        ]) ?>
                         
                         <?= $form->field($model, 'minimum_amount_order', [
                             'parts' => [

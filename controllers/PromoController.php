@@ -153,7 +153,9 @@ class PromoController extends BaseController
 
             if (!empty($save)) {
                 
-                $model->image = Tools::uploadFile('/img/promo/', $model, 'image', 'id', $model->id);
+                $image = Tools::uploadFile('/img/promo/', $model, 'image', 'id', $model->id);
+                
+                $model->image = !empty($image) ? $image : $model->oldAttributes['image'];
 
                 if ($model->save()) {
                     
